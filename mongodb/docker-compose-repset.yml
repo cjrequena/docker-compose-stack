@@ -4,13 +4,15 @@ services:
   mongo1:
     image: mongo:5
     #container_name: mongo1
+    hostname: mongo1
+    restart: always
     command: [ "--replSet", "my-replica-set", "--bind_ip_all", "--port", "27017" ]
-    volumes:
-      - mongo-data-1:/data/db
     ports:
       - "27017:27017"
     networks:
       - local-network
+    volumes:
+      - mongo-data-1:/data/db
     healthcheck:
       test: test $$(echo "rs.initiate({_id:'my-replica-set',members:[{_id:0,host:\"mongo1:27017\"},{_id:1,host:\"mongo2:37017\"},{_id:2,host:\"mongo3:47017\"}]}).ok || rs.status().ok" | mongo --port 27017 --quiet) -eq 1
       interval: 10s
@@ -19,24 +21,28 @@ services:
   mongo2:
     image: mongo:5
     #container_name: mongo2
+    hostname: mongo2
+    restart: always
     command: [ "--replSet", "my-replica-set", "--bind_ip_all", "--port", "37017" ]
-    volumes:
-      - mongo-data-2:/data/db
     ports:
       - "37017:37017"
     networks:
       - local-network
+    volumes:
+      - mongo-data-2:/data/db
   #---------------------------------------------------------------------------------------------------------------------
   mongo3:
     image: mongo:5
     #container_name: mongo3
+    hostname: mongo3
+    restart: always
     command: [ "--replSet", "my-replica-set", "--bind_ip_all", "--port", "47017" ]
-    volumes:
-      - mongo-data-3:/data/db
     ports:
       - "47017:47017"
     networks:
       - local-network
+    volumes:
+      - mongo-data-3:/data/db
 #---------------------------------------------------------------------------------------------------------------------
 networks:
   local-network:
