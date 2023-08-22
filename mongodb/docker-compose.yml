@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   mongo:
-    image: mongo:$MONGO_VERSION
+    image: mongo:${MONGO_VERSION}
     #container_name: mongo
     hostname: mongo
     restart: always
@@ -18,7 +18,7 @@ services:
       - mongo-config:/data/configdb
   #---------------------------------------------------------------------------------------------------------------------
   mongo-express:
-    image: mongo-express:$MONGO_EXPRESS_VERSION
+    image: mongo-express:${MONGO_EXPRESS_VERSION}
     #container_name: mongo-express
     hostname: mongo-express
     restart: always
