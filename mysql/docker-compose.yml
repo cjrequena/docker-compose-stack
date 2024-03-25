@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+#---------------------------------------------------------------------------------------------------------------------
+  mysql:
+    image: mysql:latest
+    container_name: mysql
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-test}
+      MYSQL_USER: ${MYSQL_USERNAME:-mysql}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-mysql}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+    ports:
+      - "3306:3306"
+    networks:
+      - local-network
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+#---------------------------------------------------------------------------------------------------------------------
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin
+    depends_on:
+      - mysql
+    environment:
+      MYSQL_USERNAME: ${MYSQL_USERNAME:-mysql}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+    ports:
+      - "8080:80"
+    networks:
+      - local-network
+#---------------------------------------------------------------------------------------------------------------------
+networks:
+  local-network:
+    name: sample-network.local
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 171.28.0.0/16
+#---------------------------------------------------------------------------------------------------------------------
+volumes:
+  mysql-data:
