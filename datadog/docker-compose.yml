@@ -1,0 +1,17 @@
+version: "3"
+services:
+  datadog:
+    image: datadog/agent:${DD_AGENT_VERSION}
+    container_name: dd-agent
+    hostname: dd-agent
+    restart: always
+    environment:
+      - DD_API_KEY=DD-APIKEY
+      - DD_DOGSTATSD_NON_LOCAL_TRAFFIC=true
+      - DD_SITE=datadoghq.eu
+    ports:
+      - "8125:8125/udp"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /proc/:/host/proc/:ro
+      - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
