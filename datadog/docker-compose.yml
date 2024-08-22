@@ -1,4 +1,7 @@
-version: "3"
+# https://docs.datadoghq.com/containers/docker/?tab=standard
+
+version: '3.8'
+
 services:
   datadog:
     image: datadog/agent:${DD_AGENT_VERSION}
@@ -6,12 +9,29 @@ services:
     hostname: dd-agent
     restart: always
     environment:
-      - DD_API_KEY=DD-APIKEY
+      - DD_API_KEY=${DD_API_KEY}
       - DD_DOGSTATSD_NON_LOCAL_TRAFFIC=true
       - DD_SITE=datadoghq.eu
+      - DD_APM_ENABLED=true
+      - DD_BIND_HOST=0.0.0.0
+      - DD_LOGS_ENABLED=true
+      - DD_LOGS_CONFIG_DOCKER_CONTAINER_USE_FILE=true # To read log from file instead of the docker socket
     ports:
       - "8125:8125/udp"
+    networks:
+      - local-network
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /proc/:/host/proc/:ro
       - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+#---------------------------------------------------------------------------------------------------------------------
+networks:
+  local-network:
+    name: sample-network.local
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 171.28.0.0/16
+
