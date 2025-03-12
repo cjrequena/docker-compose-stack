@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  consul:
+    image: hashicorp/consul:latest
+    container_name: consul
+    restart: unless-stopped
+    volumes:
+      - consul-data:/data/consul
+    ports:
+      - "8500:8500"   # UI and HTTP API
+      - "8600:8600/udp" # DNS interface
+    networks:
+      - local-network
+    command: agent -dev -client=0.0.0.0 -ui
+#---------------------------------------------------------------------------------------------------------------------
+networks:
+  local-network:
+    name: sample-network.local
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 171.28.0.0/16
+#---------------------------------------------------------------------------------------------------------------------
+volumes:
+  consul-data:
+
