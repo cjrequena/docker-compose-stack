@@ -1,0 +1,16 @@
+services:
+  oracledb:
+    image: container-registry.oracle.com/database/express:${ORACLE_EXPRESS_VERSION}
+    container_name: oracledb
+    ports:
+      - "1521:1521"  # Oracle listener
+      - "5500:5500"  # Oracle EM Express
+    environment:
+      - ORACLE_PWD=MySecurePassword123
+      - ORACLE_CHARACTERSET=AL32UTF8
+    volumes:
+      - oracledb_data:/opt/oracle/oradata
+    restart: always
+
+volumes:
+  oracledb_data:

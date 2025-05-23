@@ -1,5 +1,7 @@
 
-# Confluent Kafka Stack with KRaft Mode, Schema Registry, Connect, Control Center, and kSQLDB
+# Confluent Kafka Stack
+
+**See:** [confluentinc/cp-all-in-one](https://github.com/confluentinc/cp-all-in-one/tree/7.9.0-post/cp-all-in-one)
 
 This is a Docker Compose setup for running a full Confluent Kafka stack in KRaft (KRaft mode for KIP-500) mode, along with Kafka Schema Registry, Kafka Connect, Confluent Control Center, and kSQLDB.
 
@@ -24,8 +26,8 @@ Ensure that you have Docker and Docker Compose installed. If not, please install
 If you haven't already, clone this repository to your local machine:
 
 ```bash
-git clone <repository-url>
-cd <repository-directory>
+    git clone <repository-url>
+    cd <repository-directory>
 ```
 
 ### Docker Compose Configuration
@@ -52,7 +54,7 @@ The `docker-compose.yml` file defines all the services, networks, and configurat
 To start the entire Confluent stack, use Docker Compose:
 
 ```bash
-docker-compose up -d
+  docker-compose up -d
 ```
 
 This command will pull the required Docker images (if not already available) and start all services in detached mode.
@@ -62,7 +64,7 @@ This command will pull the required Docker images (if not already available) and
 You can check the status of all services using:
 
 ```bash
-docker-compose ps
+  docker-compose ps
 ```
 
 You should see the following containers running:
@@ -86,7 +88,7 @@ You should see the following containers running:
 To stop and remove all containers, networks, and volumes, use:
 
 ```bash
-docker-compose down
+  docker-compose down
 ```
 
 ## Troubleshooting
@@ -95,20 +97,20 @@ docker-compose down
 To view the logs of any container, use the following command:
 
 ```bash
-docker-compose logs <service-name>
+  docker-compose logs <service-name>
 ```
 
 For example, to view Kafka Broker logs:
 
 ```bash
-docker-compose logs broker
+  docker-compose logs broker
 ```
 
 ### Restarting Services
 To restart any specific service (e.g., Kafka Broker):
 
 ```bash
-docker-compose restart broker
+  docker-compose restart broker
 ```
 
 ## Customizing the Configuration
