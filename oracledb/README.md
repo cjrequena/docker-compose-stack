@@ -15,7 +15,7 @@
 3. **Pull the Image**:
 
 ```bash
-  docker pull container-registry.oracle.com/database/express:21.3.0
+  docker pull --platform=linux/amd64  container-registry.oracle.com/database/express:latest
 ```
 
 4. **Run Docker Compose**:
