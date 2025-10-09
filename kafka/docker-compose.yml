@@ -171,9 +171,37 @@ services:
       CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS: 1
       CONFLUENT_METRICS_TOPIC_REPLICATION: 1
       PORT: 9021
+  #---------------------------------------------------------------------------------------------------------------------
+  kafbat-ui:
+    image: ghcr.io/kafbat/kafka-ui:latest
+    container_name: kafbat-ui
+    hostname: kafbat-ui
+    depends_on:
+      - kafka
+      - schema-registry
+    networks:
+      local-network:
+        ipv4_address: 171.28.1.9
+    ports:
+      - "18080:8080"
+    environment:
+      DYNAMIC_CONFIG_ENABLED: 'true'
+      # Define your Kafka cluster (this matches your setup)
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      # Optional: Connect Schema Registry for Avro/Protobuf decoding
+      KAFKA_CLUSTERS_0_SCHEMAREGISTRY: http://schema-registry:8081
+      # Optional: enable basic auth (disabled by default)
+      # AUTH_TYPE: 'LOGIN_FORM'
+      # SPRING_SECURITY_USER_NAME: admin
+      # SPRING_SECURITY_USER_PASSWORD: admin
+    volumes:
+      - kafbat-data:/etc/kafkaui
+      #- .provision/kafbat-dynamic-config.yaml:/etc/kafkaui/dynamic_config.yaml # Optional: store UI config for persistence
 #---------------------------------------------------------------------------------------------------------------------
 volumes:
   kafka-data:
+  kafbat-data:
 #---------------------------------------------------------------------------------------------------------------------
 networks:
   local-network:
