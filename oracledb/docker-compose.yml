@@ -1,9 +1,13 @@
 services:
+  #---------------------------------------------------------------------------------------------------------------------
   oracledb:
     image: container-registry.oracle.com/database/express:${ORACLE_EXPRESS_VERSION}
     platform: linux/amd64  # ✅ Add this to fix M1/M2 Mac issues
-    restart: always
     container_name: oracledb
+    hostname: oracledb
+    networks:
+      local-network:
+        ipv4_address: 171.28.1.10
     ports:
       - "1521:1521"  # Oracle listener
       - "5500:5500"  # Oracle EM Express
@@ -12,5 +16,17 @@ services:
       - ORACLE_CHARACTERSET=AL32UTF8
     volumes:
       - oracledb_data:/opt/oracle/oradata
+#---------------------------------------------------------------------------------------------------------------------
 volumes:
+  kafka-data:
+  kafbat-data:
   oracledb_data:
+#---------------------------------------------------------------------------------------------------------------------
+networks:
+  local-network:
+    name: sample-network.local
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 171.28.0.0/16

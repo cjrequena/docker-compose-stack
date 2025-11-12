@@ -1,24 +1,29 @@
-## Steps to Use This
+## Sign in to the Oracle Container Registry.
 
-1. **Create Oracle Account and Accept License**:
+1. In a web browser, sign in to the Oracle Container Registry using an Oracle account at https://container-registry.oracle.com.
 
-    * Go to [https://container-registry.oracle.com](https://container-registry.oracle.com).
-    * Sign in with your Oracle account.
-    * Navigate to `database -> express` and accept the license agreement.
+2. Select the profile name. Select the profile name, and in the profile menu that appears select **Auth Token**.
 
-2. **Docker Login**:
+3. Generate the **Secret Key**. Select Generate Secret Key and note down the secret key. This is only displayed once, during the initial generation.
+
+4. (Optional) Regenerate the Secret Key. If you lose or forget the secret key, generate a new one by selecting Delete Secret Key, then select Generate Secret Key again.
+
+5. Navigate to `database -> express` and accept the license agreement.
+
+## Docker Login
 
 ```bash
-  docker login container-registry.oracle.com
+   docker login container-registry.oracle.com -u your-email@example.com
+   # Enter the auth token when prompted for password
 ```
 
-3. **Pull the Image**:
+## Pull the Image
 
 ```bash
   docker pull --platform=linux/amd64  container-registry.oracle.com/database/express:latest
 ```
 
-4. **Run Docker Compose**:
+## Run Docker Compose
 
 ```bash
   docker-compose up -d
@@ -45,7 +50,7 @@
 
 ---
 
-## **SQL Developer (GUI)**
+## SQL Developer (GUI)
 
 1. Download and open [Oracle SQL Developer](https://www.oracle.com/tools/downloads/sqldev-downloads.html).
 2. Create a new connection:
@@ -59,7 +64,7 @@
 
 ---
 
-## **SQL\*Plus (CLI)**
+## SQL\*Plus (CLI)
 
 If you have `sqlplus` installed:
 
@@ -69,7 +74,7 @@ If you have `sqlplus` installed:
 
 ---
 
-## **JDBC (Java)**
+## JDBC (Java)
 
 ```java
   String url = "jdbc:oracle:thin:@localhost:1521/XEPDB1";
@@ -80,7 +85,7 @@ Make sure the Oracle JDBC driver (`ojdbc8.jar` or similar) is in your classpath.
 
 ---
 
-## **Using Docker Exec (for troubleshooting inside the container)**
+## Using Docker Exec (for troubleshooting inside the container)
 
 ```bash
   docker exec -it oracledb bash

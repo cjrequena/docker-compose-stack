@@ -1,6 +1,6 @@
 services:
   kafka:
-    image: confluentinc/cp-kafka:7.9.0
+    image: confluentinc/cp-kafka:${KAFKA_VERSION}
     hostname: kafka
     container_name: kafka
     user: root
@@ -41,7 +41,7 @@ services:
       "
   #---------------------------------------------------------------------------------------------------------------------
   schema-registry:
-    image: confluentinc/cp-schema-registry:7.9.0
+    image: confluentinc/cp-schema-registry:${SCHEMA_REGISTRY_VERSION}
     hostname: schema-registry
     container_name: schema-registry
     depends_on:
@@ -57,7 +57,7 @@ services:
       SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
   #---------------------------------------------------------------------------------------------------------------------
   kafka-connect:
-    image: confluentinc/cp-kafka-connect:7.9.0
+    image: confluentinc/cp-kafka-connect:${KAFKA_CONNECT_VERSION}
     hostname: kafka-connect
     container_name: kafka-connect
     depends_on:
@@ -90,7 +90,7 @@ services:
       CONNECT_LOG4J_LOGGERS: org.apache.zookeeper=ERROR,org.I0Itec.zkclient=ERROR,org.reflections=ERROR
   #---------------------------------------------------------------------------------------------------------------------
   ksqldb-server:
-    image: confluentinc/cp-ksqldb-server:7.9.0
+    image: confluentinc/cp-ksqldb-server:${KSQLDB_VERSION}
     hostname: ksqldb-server
     container_name: ksqldb-server
     depends_on:
@@ -116,7 +116,7 @@ services:
       KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: 'true'
   #---------------------------------------------------------------------------------------------------------------------
   ksqldb-cli:
-    image: confluentinc/cp-ksqldb-cli:7.9.0
+    image: confluentinc/cp-ksqldb-cli:${KSQLDB_VERSION}
     container_name: ksqldb-cli
     depends_on:
       - kafka
@@ -129,7 +129,7 @@ services:
     tty: true
   #---------------------------------------------------------------------------------------------------------------------
   rest-proxy:
-    image: confluentinc/cp-kafka-rest:7.9.0
+    image: confluentinc/cp-kafka-rest:${KAFKA_REST_VERSION}
     hostname: rest-proxy
     container_name: rest-proxy
     depends_on:
@@ -147,7 +147,7 @@ services:
       KAFKA_REST_SCHEMA_REGISTRY_URL: 'http://schema-registry:8081'
   #---------------------------------------------------------------------------------------------------------------------
   control-center:
-    image: confluentinc/cp-enterprise-control-center:7.9.0
+    image: confluentinc/cp-enterprise-control-center:${CONTROL_CENTER_VERSION}
     hostname: control-center
     container_name: control-center
     depends_on:
@@ -173,7 +173,7 @@ services:
       PORT: 9021
   #---------------------------------------------------------------------------------------------------------------------
   kafbat-ui:
-    image: ghcr.io/kafbat/kafka-ui:latest
+    image: ghcr.io/kafbat/kafka-ui:${KAFBAT_UI_VERSION}
     container_name: kafbat-ui
     hostname: kafbat-ui
     depends_on:
