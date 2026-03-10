@@ -1,0 +1,165 @@
+# ==============================================================
+# WordPress Docker Stack — MariaDB edition
+# ==============================================================
+# Usage:
+#   cp .env.example .env   # fill in your values
+#   docker compose up -d
+# ==============================================================
+
+services:
+
+  # -------------------------------------------------------
+  # MariaDB
+  # -------------------------------------------------------
+  mariadb:
+    image: mariadb:${MARIADB_VERSION:-lts}
+    container_name: wordpress_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE:      ${MYSQL_DATABASE}
+      MYSQL_USER:          ${MYSQL_USER}
+      MYSQL_PASSWORD:      ${MYSQL_PASSWORD}
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+
+  # -------------------------------------------------------
+  # WordPress
+  # -------------------------------------------------------
+  wordpress:
+    image: wordpress:${WORDPRESS_VERSION:-php8.3-apache}
+    container_name: wordpress_app
+    restart: unless-stopped
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    ports:
+      - "${WORDPRESS_PORT:-8080}:80"
+    environment:
+      WORDPRESS_DB_HOST:      mariadb:3306
+      WORDPRESS_DB_NAME:      ${MYSQL_DATABASE}
+      WORDPRESS_DB_USER:      ${MYSQL_USER}
+      WORDPRESS_DB_PASSWORD:  ${MYSQL_PASSWORD}
+      WORDPRESS_TABLE_PREFIX: ${WORDPRESS_TABLE_PREFIX:-wp_}
+      WORDPRESS_DEBUG:        ${WORDPRESS_DEBUG:-0}
+      WORDPRESS_DEBUG_LOG:    ${WORDPRESS_DEBUG_LOG:-0}
+      WORDPRESS_DEBUG_DISPLAY: ${WORDPRESS_DEBUG_DISPLAY:-0}
+      WORDPRESS_SITE_URL:     ${WORDPRESS_SITE_URL:-http://localhost:8080}
+      WP_MEMORY_LIMIT:        ${WP_MEMORY_LIMIT:-512M}
+      WP_MAX_MEMORY_LIMIT:    ${WP_MAX_MEMORY_LIMIT:-512M}
+      WP_POST_REVISIONS:      ${WP_POST_REVISIONS:-5}
+      DISALLOW_FILE_EDIT:     ${DISALLOW_FILE_EDIT:-0}
+      DISALLOW_FILE_MODS:     ${DISALLOW_FILE_MODS:-0}
+      AUTOMATIC_UPDATER_DISABLED: ${AUTOMATIC_UPDATER_DISABLED:-1}
+      WP_AUTO_UPDATE_CORE:    ${WP_AUTO_UPDATE_CORE:-0}
+    volumes:
+      - wp-html:/var/www/html
+      - ./provision/wordpress/wp-config.php:/var/www/html/wp-config.php:ro
+    networks:
+      - backend
+      - frontend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 256M
+
+  # -------------------------------------------------------
+  # WP-CLI — one-off commands & plugin management
+  # Run:  docker compose run --rm wpcli wp <command>
+  # Example: docker compose run --rm wpcli wp plugin list
+  # -------------------------------------------------------
+  wpcli:
+    image: wordpress:cli
+    container_name: wordpress_cli
+    restart: "no"
+    depends_on:
+      wordpress:
+        condition: service_healthy
+    user: "33:33"
+    environment:
+      WORDPRESS_DB_HOST:     mariadb:3306
+      WORDPRESS_DB_NAME:     ${MYSQL_DATABASE}
+      WORDPRESS_DB_USER:     ${MYSQL_USER}
+      WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
+      WORDPRESS_TABLE_PREFIX: ${WORDPRESS_TABLE_PREFIX:-wp_}
+      WORDPRESS_SITE_URL:    ${WORDPRESS_SITE_URL:-http://localhost:8080}
+    volumes:
+      - wp-html:/var/www/html
+      - ./provision/wordpress/wp-config.php:/var/www/html/wp-config.php:ro
+    networks:
+      - backend
+
+  # -------------------------------------------------------
+  # Adminer — Database Management UI
+  # Access at http://localhost:8081
+  # -------------------------------------------------------
+  adminer:
+    image: adminer:latest
+    container_name: wordpress_adminer
+    restart: unless-stopped
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    ports:
+      - "8081:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: mariadb
+      ADMINER_DESIGN: pepa-linha
+    networks:
+      - backend
+      - frontend
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 128M
+
+# -------------------------------------------------------
+# Networks
+# -------------------------------------------------------
+networks:
+  backend:
+    name: wordpress-backend
+    driver: bridge
+    internal: true
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/24
+
+  frontend:
+    name: wordpress-frontend
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.29.0.0/24
+
+# -------------------------------------------------------
+# Volumes
+# -------------------------------------------------------
+volumes:
+  mariadb-data:
+    name: wordpress_mariadb_data
+  wp-html:
+    name: wordpress_html
