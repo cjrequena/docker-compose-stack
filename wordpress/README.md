@@ -44,7 +44,7 @@ A production-ready WordPress development environment using Docker Compose with M
 4. **Install WordPress using WP-CLI:**
    ```bash
    docker compose run --rm wpcli wp core install \
-     --url="http://mysite.test:800" \
+     --url="http://mysite.test:8080" \
      --title="My WordPress Site" \
      --admin_user="admin" \
      --admin_password="admin" \
